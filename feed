@@ -1,0 +1,60 @@
+//
+//  Created by Alex Berezovsky on 8/6/16.
+//  Copyright © 2016 PatataMatata. All rights reserved.
+//
+
+import UIKit
+
+class Featured: UIViewController/*, UICollectionViewDelegate, UICollectionViewDataSource,  UICollectionViewFlowLayout */ {
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let urlFeaturedStrip = "https://api.vid.me/users/featured"
+        let featuredSession = NSURLSession.sharedSession()
+        let fURL = NSURL(string: urlFeaturedStrip)
+        
+
+        featuredSession.dataTaskWithURL(fURL!) { (NSData, NSURLResponse, NSError) -> Void in
+            if let responseData = NSData {
+                
+                do {
+                    let json = try NSJSONSerialization.JSONObjectWithData(responseData, options: NSJSONReadingOptions.AllowFragments)
+
+                    //alternative way
+//                    let dict = JSON(responseData)
+//                    if let vdID = dict[0]["video_id"].string, let vdName = dict[0]["title"].string, let likes = dict[0]["likes_count"].string, let thumb = dict[0]["thumbnail"].string, let kVid = dict[0]["clip_url"].string, let height = dict[0]["height"].string {
+//                        var kittyVD = KittyVidPost(videoID: vdID, videoName: vdName, likesCount: likes, thumbNailImg: thumb, kittyVid: kVid, height: height)
+//                        print("\(vdName)")
+//                    }
+                    //alternative way ends
+                    
+                    if let dict = json as? Dictionary<String, AnyObject> {
+
+//                        print("DID WE GET HERE: \(dict.debugDescription)")
+
+                        if let vdID = dict["video_id"] as? String, let vdName = dict["title"] as? String, let likes = dict["likes_count"]as? String, let thumb = dict["thumbnail"] as? String, let kVid = dict["clip_url"] as? String, let height = dict["height"] as? String {
+
+                            var kittyVD = KittyVidPost(videoID: vdID, videoName: vdName, likesCount: likes, thumbNailImg: thumb, kittyVid: kVid, height: height)
+
+                            print(kittyVD.videoName)
+                    
+                        }
+                    }
+                    
+                    
+//                    print(json)
+                    
+                    
+                } catch {
+                    print("Could not serialisise")
+                }
+            }
+        }.resume()
+        
+//        MARK CELL_CONFIG
+        
+    }
+    
+}
